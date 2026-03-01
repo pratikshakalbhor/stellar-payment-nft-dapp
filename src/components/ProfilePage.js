@@ -11,7 +11,7 @@ import {
 } from './ProfilePageIcons';
 import './ProfilePage.css';
 
-const ProfilePage = ({ account, nfts }) => {
+const ProfilePage = ({ account, nfts, rewardBalance }) => {
   const [copied, setCopied] = useState(false);
 
   if (!account) {
@@ -108,6 +108,19 @@ const ProfilePage = ({ account, nfts }) => {
               </div>
               <div className="stat-badge">Collection</div>
             </motion.div>
+
+            {/* Reward Balance */}
+            <motion.div className="stat-card" variants={itemVariants}>
+              <div className="stat-icon xlm-icon">
+                <XLMIcon />
+              </div>
+              <div className="stat-content">
+                <span className="stat-label">Reward Token</span>
+                <span className="stat-value">{rewardBalance}</span>
+              </div>
+              <div className="stat-badge">Token</div>
+            </motion.div>
+
           </div>
 
           {/* Divider */}

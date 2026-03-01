@@ -2,8 +2,6 @@
 
 use soroban_sdk::{contract, contractimpl, symbol_short, Address, Env, Symbol};
 
-
-
 // Key for storing the total number of NFTs minted. A single u32 value.
 const TOTAL: Symbol = symbol_short!("TOTAL");
 // Base key for storing the owner of an NFT. The full key is a tuple
@@ -21,8 +19,6 @@ pub struct NFTContract;
 #[contractimpl]
 impl NFTContract {
     /// Mints a new NFT, assigning it to the specified owner.
-    
- 
     pub fn mint_nft(env: Env, minter: Address, owner: Address, name: Symbol, image_url: Symbol) {
         // Ensure the minter (the one calling the function) has authorized this transaction.
         minter.require_auth();
@@ -34,21 +30,14 @@ impl NFTContract {
         total += 1;
         let nft_id = total;
 
-
         // Store the owner for this NFT ID. Key Value: owner_address
-        env.storage()
-            .instance()
-            .set(&(OWNER, nft_id), &owner);
+        env.storage().instance().set(&(OWNER, nft_id), &owner);
 
-        // Store the name for this NFT ID. Key: `("NAME", 1)`, Value: `"My First NFT"`
-        env.storage()
-            .instance()
-            .set(&(NAME, nft_id), &name);
+        // Store the name for this NFT ID.
+        env.storage().instance().set(&(NAME, nft_id), &name);
 
-        // Store the image URL for this NFT ID. Key
-        env.storage()
-            .instance()
-            .set(&(IMAGE, nft_id), &image_url);
+        // Store the image URL for this NFT ID.
+        env.storage().instance().set(&(IMAGE, nft_id), &image_url);
 
         // Finally, update the total number of NFTs.
         env.storage().instance().set(&TOTAL, &nft_id);
@@ -60,11 +49,10 @@ impl NFTContract {
         env.storage().instance().set(&key_balance, &balance);
 
         // Emit an event to notify that a new NFT has been minted.
-        // Topics: event_name, nft_id, owner
-       env.events().publish(
-    (symbol_short!("NFT_MINTED"), nft_id),
-    (owner, name)
-);
+        env.events().publish(
+            (symbol_short!("NFT_MINTED"), nft_id),
+            (owner, name),
+        );
     }
 
     /// Returns the total number of NFTs minted so far.
@@ -78,7 +66,6 @@ impl NFTContract {
     }
 
     /// Returns the owner of the NFT with the given ID.
-
     pub fn get_owner(env: Env, id: u32) -> Address {
         Self::check_nft_exists(&env, id);
         let key = (OWNER, id);
@@ -89,7 +76,6 @@ impl NFTContract {
     }
 
     /// Returns the name of the NFT with the given ID.
-   
     pub fn get_name(env: Env, id: u32) -> Symbol {
         Self::check_nft_exists(&env, id);
         let key = (NAME, id);
@@ -97,7 +83,6 @@ impl NFTContract {
     }
 
     /// Returns the image URL of the NFT with the given ID.
- 
     pub fn get_image(env: Env, id: u32) -> Symbol {
         Self::check_nft_exists(&env, id);
         let key = (IMAGE, id);

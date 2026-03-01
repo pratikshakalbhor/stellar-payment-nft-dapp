@@ -6,6 +6,7 @@ import NavBar from "./components/navBar";
 import { HORIZON_URL } from "./constants";
 import Background from "./components/Background"; 
 import { fetchNFTs } from "./utils/soroban";
+import { getBalance } from "./stellar";
 import PaymentPage from "./pages/PaymentPage";
 import MintPage from "./pages/MintPage";
 import GalleryPage from "./pages/GalleryPage";
@@ -19,6 +20,7 @@ function App() {
   const [balance, setBalance] = useState("0");
   const [nfts, setNfts] = useState([]);
   const [accountDetails, setAccountDetails] = useState(null);
+  const [rewardBalance, setRewardBalance] = useState(0);
 
   const server = useMemo(
     () => new StellarSdk.Horizon.Server(HORIZON_URL),
@@ -51,6 +53,17 @@ function App() {
         } catch (e) {
           console.error("Failed to fetch NFTs:", e);
           setNfts([]); // Reset on error
+        }
+
+        // Fetch NFTREWARD Token Balance
+        try {
+          console.log("Calling getBalance...");
+          getBalance(walletAddress).then((res) => {
+            console.log("Balance received:", res);
+            setRewardBalance(res);
+          });
+        } catch (e) {
+          console.error("Failed to fetch reward balance:", e);
         }
       }
     };
@@ -90,6 +103,7 @@ function App() {
                       balance={balance}
                       setBalance={setBalance}
                       server={server}
+                      rewardBalance={rewardBalance}
                     />
                 </div>
               ) : <Navigate to="/login" replace />
@@ -116,7 +130,7 @@ function App() {
             element={
               walletAddress ? (
                 <div className="pages-container">
-                  <ProfilePage account={accountDetails} nfts={nfts} />
+                  <ProfilePage account={accountDetails} nfts={nfts} rewardBalance={rewardBalance} />
                 </div>
               ) : <Navigate to="/login" replace />
             }

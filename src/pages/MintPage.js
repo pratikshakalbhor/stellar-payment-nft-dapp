@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import * as StellarSdk from "@stellar/stellar-sdk";
 import { useWallet } from "../WalletContext";
 import { signTransaction } from "../walletService";
-import { NETWORK_PASSPHRASE } from "../constants";
+import { NETWORK_PASSPHRASE, CONTRACT_ID, SOROBAN_SERVER } from "../constants";
 import { containerVariants, itemVariants } from "../components/ProfilePageAnimations";
 import { getValidImageIds } from "../utils/imageMap";
 import { CheckIcon, CopyIcon } from "../components/ProfilePageIcons";
@@ -19,8 +19,9 @@ const MintPage = ({ walletAddress, server, setBalance, setNfts, nfts }) => {
   const [txHash, setTxHash] = useState("");
   const [mintedAssetCode, setMintedAssetCode] = useState("");
   const [copied, setCopied] = useState(false);
+  const [sorobanBalance, setSorobanBalance] = useState(0);
 
-  const fetchBalance = async () => {
+  const fetchBalance = useCallback(async () => {
     try {
       const account = await server.loadAccount(walletAddress);
       const xlmBalance = account.balances.find(
@@ -30,7 +31,40 @@ const MintPage = ({ walletAddress, server, setBalance, setNfts, nfts }) => {
     } catch (e) {
       console.error("Failed to fetch balance on mint page", e);
     }
-  };
+  }, [server, walletAddress, setBalance]);
+
+  const fetchSorobanBalance = useCallback(async () => {
+    if (!walletAddress) return;
+    try {
+      const contract = new StellarSdk.Contract(CONTRACT_ID);
+      // Convert address to ScVal
+      const addressScVal = StellarSdk.nativeToScVal(walletAddress, { type: 'address' });
+      const op = contract.call("balance", addressScVal);
+
+      // Build a simulation transaction
+      const account = await server.loadAccount(walletAddress);
+      const tx = new StellarSdk.TransactionBuilder(account, {
+        fee: "100",
+        networkPassphrase: NETWORK_PASSPHRASE,
+      })
+        .addOperation(op)
+        .setTimeout(30)
+        .build();
+
+      const result = await SOROBAN_SERVER.simulateTransaction(tx);
+      
+      if (StellarSdk.scValToNative && result.result && result.result.retval) {
+        setSorobanBalance(StellarSdk.scValToNative(result.result.retval));
+      }
+    } catch (e) {
+      console.error("Failed to fetch Soroban balance:", e);
+    }
+  }, [walletAddress, server]);
+
+  useEffect(() => {
+    fetchBalance();
+    fetchSorobanBalance();
+  }, [fetchBalance, fetchSorobanBalance]);
 
   const handleMint = async () => {
     setTxHash("");
@@ -154,6 +188,7 @@ const MintPage = ({ walletAddress, server, setBalance, setNfts, nfts }) => {
       setName("");
       setImageUrl("");
       await fetchBalance(); // Refresh balance after successful mint
+      await fetchSorobanBalance(); // Refresh Soroban balance
     } catch (e) {
       console.error(e);
       let msg = e.message || "Transaction failed";
@@ -246,6 +281,11 @@ const MintPage = ({ walletAddress, server, setBalance, setNfts, nfts }) => {
         </motion.div>
 
         <motion.div className="card mint-card" variants={itemVariants}>
+          <div className="mb-6 p-4 bg-white/5 rounded-xl border border-white/10 flex justify-between items-center">
+            <span className="text-gray-400 text-sm">Soroban NFT Balance</span>
+            <span className="text-2xl font-bold text-purple-400">{sorobanBalance}</span>
+          </div>
+
           <div className="mint-form">
             <div className="input-group">
               <label className="input-label">NFT Name</label>
