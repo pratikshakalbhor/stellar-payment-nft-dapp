@@ -12,6 +12,8 @@ const OWNER: Symbol = symbol_short!("OWNER");
 const NAME: Symbol = symbol_short!("NAME");
 // Base key for storing the image URL of an NFT. The full key is a tuple
 const IMAGE: Symbol = symbol_short!("IMAGE");
+// Key for storing the balance of an user. The full key is a tuple (BALANCE, owner_address)
+const BALANCE: Symbol = symbol_short!("BALANCE");
 
 #[contract]
 pub struct NFTContract;
@@ -23,7 +25,7 @@ impl NFTContract {
  
     pub fn mint_nft(env: Env, minter: Address, owner: Address, name: Symbol, image_url: Symbol) {
         // Ensure the minter (the one calling the function) has authorized this transaction.
-       
+        minter.require_auth();
 
         // Get the current total number of NFTs, or 0 if none have been minted.
         let mut total: u32 = Self::get_total(&env);
@@ -51,6 +53,12 @@ impl NFTContract {
         // Finally, update the total number of NFTs.
         env.storage().instance().set(&TOTAL, &nft_id);
 
+        // Update the owner's balance
+        let key_balance = (BALANCE, owner.clone());
+        let mut balance: u32 = env.storage().instance().get(&key_balance).unwrap_or(0);
+        balance += 1;
+        env.storage().instance().set(&key_balance, &balance);
+
         // Emit an event to notify that a new NFT has been minted.
         // Topics: event_name, nft_id, owner
        env.events().publish(
@@ -62,6 +70,11 @@ impl NFTContract {
     /// Returns the total number of NFTs minted so far.
     pub fn get_total(env: &Env) -> u32 {
         env.storage().instance().get(&TOTAL).unwrap_or(0)
+    }
+
+    /// Returns the number of NFTs owned by a specific user.
+    pub fn balance(env: Env, user: Address) -> u32 {
+        env.storage().instance().get(&(BALANCE, user)).unwrap_or(0)
     }
 
     /// Returns the owner of the NFT with the given ID.
