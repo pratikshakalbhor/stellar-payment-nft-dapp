@@ -145,6 +145,7 @@ Minimum 3 tests passing.
 
 Token Name: NFTREWARD  
 Network: Stellar Testnet  
+Admin: pratiksha
 
 Contract ID:  
 CC727BIT26EWN3XINZBVCEUDZONAA34ABNUDCDW724DMSKPOBZ2H6LQZ  
@@ -154,4 +155,5 @@ d7475766ad63160b63ab396340d57c8402aa33721c26b22aff2d2099e3b4357
 
 Explorer Link:  
 https://stellar.expert/explorer/testnet/tx/d7475766ad63160b63ab396340d57c8402aa33721c26b22aff2d2099e3b4357
+
 
