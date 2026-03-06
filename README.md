@@ -18,14 +18,12 @@ CAY3O4WNR3H7T4ARQIXNPITJPHWY7ZRMINGQR2TQBHDQJXDEBR33OKFP
 https://stellar.expert/explorer/testnet/tx/23fac9f8ac14a0b9cde986dad60713ed69fee18a4656cb15a2e787133c24269f
 
 ---
-
----
 ## Screenshots
 ### Wallet 
 <img width="1891" height="908" alt="Screenshot 2026-03-06 153225" src="https://github.com/user-attachments/assets/c80bbcdf-2de5-40d4-a7a2-e8ac7781023d" />
 
 ### Wallet Connection
-<img width="1878" height="893" alt="image" src="https://github.com/user-attachments/assets/91bc9810-00ee-4968-b342-1e6b47e76228" />
+<img width="1875" height="900" alt="Screenshot 2026-03-06 155023" src="https://github.com/user-attachments/assets/524bd36d-b08f-494d-977c-81babc3d3553" />
 
 ### payment Send 
 <img width="1880" height="900" alt="Screenshot 2026-03-06 155248" src="https://github.com/user-attachments/assets/0a16ef55-565b-46a7-9ad1-4acaa54b6bf1" />
@@ -58,15 +56,6 @@ https://stellar.expert/explorer/testnet/tx/23fac9f8ac14a0b9cde986dad60713ed69fee
 
 ### Test Output (3+ Tests Passing)
 <img width="1702" height="972" alt="image" src="https://github.com/user-attachments/assets/eb23aad1-547b-4717-a9b6-2414c0833349" />
-
----
-
-### How it works:
-1. User calls `mint_nft` on NFT contract
-2. NFT contract stores NFT data on-chain
-3. NFT contract calls `token::transfer()` on SNFT contract ← **inter-contract call**
-4. SNFT tokens automatically sent to minter
-5. Event emitted for both contracts
 
 ---
 
@@ -121,8 +110,6 @@ stellar-nft-dapp/
     └── server.js               # IPFS proxy
 ```
 
----
-
 ## ⚙️ Setup & Run
 
 ### 1. Clone & Install
@@ -156,8 +143,6 @@ cd stellar-new && npm start
 npm test 
 # 39 tests passing ✅
 ```
-
----
 
 ## 🌟 Features
 
@@ -203,6 +188,7 @@ d7475766ad63160b63ab396340d57c8402aa33721c26b22aff2d2099e3b4357
 
 Explorer Link:  
 https://stellar.expert/explorer/testnet/tx/d7475766ad63160b63ab396340d57c8402aa33721c26b22aff2d2099e3b4357
+
 
 
 
